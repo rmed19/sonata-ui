@@ -1,0 +1,16 @@
+{
+    "name": "jmpantoja/sonata-ui",
+    "minimum-stability": "dev",
+    "keywords": [ "mojo", "sonata", "blocks", "ui" ],
+    "license": "MIT",
+    "description": "A collection of blocks for sonata projects",
+    "type": "library",
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "autoload": {
+        "psr-0": {
+            "Mojo\\Sonata\\UIBundle": ""
+        }
+    }
+}
