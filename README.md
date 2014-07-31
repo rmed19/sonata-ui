@@ -1,4 +1,4 @@
-sonata-blocks
+sonata-ui
 =============
 
 blocks for sonata projects
