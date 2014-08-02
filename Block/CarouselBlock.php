@@ -51,8 +51,7 @@ class CarouselBlock extends BaseBlockService {
         $settings = $blockContext->getSettings();
         $this->addIdToSettings($settings);
 
-        $items = $this->getItems($settings['gallery_name']);
-
+        $items = $this->getItems($settings['gallery']);
         return $this->renderPrivateResponse($blockContext->getTemplate(), array(
                     'block' => $blockContext->getBlock(),
                     'settings' => $settings,
@@ -68,11 +67,11 @@ class CarouselBlock extends BaseBlockService {
         }
     }
 
-    private function getItems($name) {
+    private function getItems($id) {
         $items = array();
         $manager = $this->getManager();
 
-        $gallery = $manager->findOneBy(array('name' => $name));
+        $gallery = $manager->findOneBy(array('id' => $id));
 
         if (!is_null($gallery)) {
             $items = $gallery->getGalleryHasMedias()->toArray();
@@ -89,7 +88,7 @@ class CarouselBlock extends BaseBlockService {
         $resolver->setDefaults(array(
             'template' => 'MojoSonataUIBundle:Block:carousel.html.twig',
             'id' => null,
-            'gallery_name' => null,
+            'gallery' => null,
             'format' => null,
         ));
     }
@@ -108,20 +107,40 @@ class CarouselBlock extends BaseBlockService {
 
         $template = $block->getSetting('template', 'MojoSonataUIBundle:Block:carousel.html.twig');
 
+        $galleries = $this->getGalleries();
+
         $form->add('settings', 'sonata_type_immutable_array', array(
             'keys' => array(
                 array('template', 'text', array('required' => true, 'data' => $template)),
                 array('id', 'text', array('required' => false)),
-                array('gallery_name', 'text', array('required' => true)),
+                array('gallery', 'choice', array('choices' => $galleries)),
                 array('format', 'text', array('required' => true)),
             )
         ));
+
+        
+    }
+
+    private function getGalleries() {
+        $galleries = array();
+        $manager = $this->getManager();
+        foreach ($manager->findAll() as $gallery) {
+            $galleries[$gallery->getId()] = (string) $gallery;
+        }
+
+        return $galleries;
     }
 
     /**
      * {@inheritdoc}
      */
     public function validateBlock(ErrorElement $errorElement, BlockInterface $block) {
+
+        $errorElement
+                ->with('settings[format]')
+//                ->assertNotNull(array())
+                ->assertNotBlank()
+                ->end();
         
     }
 
