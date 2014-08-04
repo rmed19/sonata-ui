@@ -26,7 +26,7 @@ use Symfony\Component\Templating\EngineInterface;
  */
 class AddressBlock extends BaseBlockService {
 
-    const DEFAULT_TEMPLATE = 'MojoSonataUIBundle:Block:address_simple.html.twig';
+    const DEFAULT_TEMPLATE = 'MojoSonataUIBundle:Address:simple.html.twig';
 
     /**
      *
@@ -106,11 +106,11 @@ class AddressBlock extends BaseBlockService {
     private function getTemplates() {
         $templates = array();
         $finder = new Finder();
-        $finder->name('address_*.html.twig')->files()->in(__DIR__ . '/../Resources/views');
+        $finder->files()->in(__DIR__ . '/../Resources/views/Address');
 
         foreach ($finder as $file) {
             $name = $file->getFilename();
-            $key = sprintf("MojoSonataUIBundle:Block:%s", $name);
+            $key = sprintf("MojoSonataUIBundle:Address:%s", $name);
 
             $templates[$key] = $name;
         }

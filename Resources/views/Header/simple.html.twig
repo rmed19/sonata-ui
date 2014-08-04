@@ -1,0 +1,17 @@
+<div class="container">
+    <div class="navbar-header">
+        <button data-target=".bs-navbar-collapse" data-toggle="collapse" type="button" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../">Mabiac</a>
+    </div>
+    <nav role="navigation" class="collapse navbar-collapse bs-navbar-collapse">
+        
+        {{ knp_menu_render('MabiacFrontBundle:Builder:mainMenu')  }}
+        {{ knp_menu_render('MabiacFrontBundle:Builder:adminMenu')  }}
+
+    </nav>    
+</div>
