@@ -13,7 +13,8 @@ use Sonata\AdminBundle\Validator\ErrorElement;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\MediaBundle\Model\GalleryManagerInterface;
+use Sonata\NewsBundle\Model\PostManagerInterface;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Templating\EngineInterface;
@@ -23,11 +24,13 @@ use Symfony\Component\Templating\EngineInterface;
  *
  * @author jmpantoja
  */
-class CarouselBlock extends BaseBlockService {
+class PostBlock extends BaseBlockService {
+
+    const DEFAULT_TEMPLATE = 'MojoSonataUIBundle:Block:post_2columns.html.twig';
 
     /**
      *
-     * @var GalleryManagerInterface
+     * @var PostManagerInterface
      */
     private $manager;
 
@@ -36,9 +39,9 @@ class CarouselBlock extends BaseBlockService {
      *
      * @param string               $name        A block name
      * @param EngineInterface      $templating  Twig engine service
-     * @param GalleryManagerInterface    $manager  
+     * @param PostManagerInterface    $manager 
      */
-    public function __construct($name, EngineInterface $templating, GalleryManagerInterface $manager) {
+    public function __construct($name, EngineInterface $templating, PostManagerInterface $manager) {
         parent::__construct($name, $templating);
         $this->setManager($manager);
     }
@@ -49,35 +52,22 @@ class CarouselBlock extends BaseBlockService {
     public function execute(BlockContextInterface $blockContext, Response $response = null) {
 
         $settings = $blockContext->getSettings();
-        $this->addIdToSettings($settings);
+        $post = $this->getPost($settings['post']);
 
-        $items = $this->getItems($settings['gallery']);
+        
         return $this->renderPrivateResponse($blockContext->getTemplate(), array(
                     'block' => $blockContext->getBlock(),
                     'settings' => $settings,
-                    'items' => $items,
-                    'empty' => empty($items)
+                    'post' => $post
         ));
     }
 
-    private function addIdToSettings(array &$settings) {
-
-        if (empty($settings['id'])) {
-            $settings['id'] = uniqid('carousel-');
-        }
-    }
-
-    private function getItems($id) {
-        $items = array();
+    private function getPost($id) {
         $manager = $this->getManager();
 
-        $gallery = $manager->findOneBy(array('id' => $id));
+        $post = $manager->findOneBy(array('id' => $id));
 
-        if (!is_null($gallery)) {
-            $items = $gallery->getGalleryHasMedias()->toArray();
-        }
-
-        return $items;
+        return $post;
     }
 
     /**
@@ -86,10 +76,8 @@ class CarouselBlock extends BaseBlockService {
     public function setDefaultSettings(OptionsResolverInterface $resolver) {
         //'template' => 'MojoSonataUIBundle:Block:carousel.html.twig',
         $resolver->setDefaults(array(
-            'template' => 'MojoSonataUIBundle:Block:carousel.html.twig',
-            'id' => null,
-            'gallery' => null,
-            'format' => null,
+            'template' => self::DEFAULT_TEMPLATE,
+            'post' => null,
         ));
     }
 
@@ -97,7 +85,7 @@ class CarouselBlock extends BaseBlockService {
      * {@inheritdoc}
      */
     public function getName() {
-        return 'Carousel';
+        return 'Noticia';
     }
 
     /**
@@ -105,30 +93,43 @@ class CarouselBlock extends BaseBlockService {
      */
     public function buildEditForm(FormMapper $form, BlockInterface $block) {
 
-        $template = $block->getSetting('template', 'MojoSonataUIBundle:Block:carousel.html.twig');
+//        $template = $block->getSetting('template', self::DEFAULT_TEMPLATE);
 
-        $galleries = $this->getGalleries();
+        $posts = $this->getPosts();
+        $templates = $this->getTemplates();
 
         $form->add('settings', 'sonata_type_immutable_array', array(
             'keys' => array(
-                array('template', 'text', array('required' => true, 'data' => $template)),
-                array('id', 'text', array('required' => false)),
-                array('gallery', 'choice', array('choices' => $galleries)),
-                array('format', 'text', array('required' => true)),
+//                array('template', 'text', array('required' => true, 'data' => $template)),
+                array('template', 'sonata_page_type_choice', array('choices' => $templates)),
+                array('post', 'sonata_page_type_choice', array('choices' => $posts))
             )
         ));
-
-        
     }
 
-    private function getGalleries() {
-        $galleries = array();
-        $manager = $this->getManager();
-        foreach ($manager->findAll() as $gallery) {
-            $galleries[$gallery->getId()] = (string) $gallery;
+    private function getTemplates() {
+        $templates = array();
+        $finder = new Finder();
+        $finder->name('post_*.html.twig')->files()->in(__DIR__.'/../Resources/views');
+
+        foreach ($finder as $file) {
+            $name = $file->getFilename();
+            $key = sprintf("MojoSonataUIBundle:Block:%s", $name);
+            
+            $templates[$key] = $name;
         }
 
-        return $galleries;
+        return $templates;
+    }
+
+    private function getPosts() {
+        $posts = array();
+        $manager = $this->getManager();
+        foreach ($manager->findAll() as $post) {
+            $posts[$post->getId()] = (string) $post;
+        }
+
+        return $posts;
     }
 
     /**
@@ -137,18 +138,16 @@ class CarouselBlock extends BaseBlockService {
     public function validateBlock(ErrorElement $errorElement, BlockInterface $block) {
 
         $errorElement
-                ->with('settings[format]')
-//                ->assertNotNull(array())
+                ->with('settings[template]')
                 ->assertNotBlank()
                 ->end();
-        
     }
 
     public function getManager() {
         return $this->manager;
     }
 
-    public function setManager(GalleryManagerInterface $manager) {
+    public function setManager(PostManagerInterface $manager) {
         $this->manager = $manager;
     }
 
