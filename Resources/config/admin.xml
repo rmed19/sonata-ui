@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="mojo.sonata.ui.admin.simpledata" class="Mojo\Sonata\UIBundle\Admin\SimpleDataAdmin">
+            <tag name="sonata.admin" manager_type="orm" group="Content" label="asdada" />
+
+            <argument />
+            <argument>Mojo\Sonata\UIBundle\Entity\SimpleData</argument>
+            <argument />
+            <call method="setFactory">
+                <argument type="service" id="mojo.sonata.simpledata.fields.factory" />
+            </call>
+                
+        </service>        
+
+    </services>
+
+            
+</container>

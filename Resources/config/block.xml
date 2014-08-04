@@ -6,6 +6,9 @@
 
     <parameters>
         <parameter key="mojo.sonata.ui.block.carousel.class">Mojo\Sonata\UIBundle\Block\CarouselBlock</parameter>
+        <parameter key="mojo.sonata.ui.block.post.class">Mojo\Sonata\UIBundle\Block\PostBlock</parameter>
+        <parameter key="mojo.sonata.ui.block.simpledata.class">Mojo\Sonata\UIBundle\Block\SimpleDataBlock</parameter>
+        <parameter key="mojo.sonata.ui.block.address.class">Mojo\Sonata\UIBundle\Block\AddressBlock</parameter>
     </parameters>
 
     <services>
@@ -16,6 +19,31 @@
             <argument type="service" id="templating" />
             <argument type="service" id="sonata.media.manager.gallery" />
         </service>
+        
+        <service id="mojo.sonata.ui.block.post" class="%mojo.sonata.ui.block.post.class%">
+            <tag name="sonata.block" />
+
+            <argument>mojo.sonata.ui.block.post</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="sonata.news.manager.post" />
+        </service>
+        
+        <service id="mojo.sonata.ui.block.simpledata" class="%mojo.sonata.ui.block.simpledata.class%">
+            <tag name="sonata.block" />
+
+            <argument>mojo.sonata.ui.block.simpledata</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="mojo.sonata.ui.manager.simpledata" />
+        </service>
+        
+        <service id="mojo.sonata.ui.block.address" class="%mojo.sonata.ui.block.address.class%">
+            <tag name="sonata.block" />
+
+            <argument>mojo.sonata.ui.block.address</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="mojo.sonata.ui.manager.simpledata" />
+        </service>
+        
     </services>
     
 </container>
