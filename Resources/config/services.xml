@@ -4,17 +4,21 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
     <parameters>
-        <parameter key="mojo_sonata_ui.example.class">Mojo\Sonata\UIBundle\Example</parameter>
+        <parameter key="mojo.sonata.simpledata.fields.factory.class">Mojo\Sonata\UIBundle\Admin\SimpleDataFieldsFactory</parameter>
+        <parameter key="mojo.sonata.ui.manager.simpledata.class">Mojo\Sonata\UIBundle\Entity\SimpleDataManager</parameter>
+        <parameter key="mojo.sonata.ui.manager.simpledata.entity">Mojo\Sonata\UIBundle\Entity\SimpleData</parameter>
     </parameters>
+    
 
     <services>
-        <service id="mojo_sonata_ui.example" class="%mojo_sonata_ui.example.class%">
-            <argument type="service" id="service_id" />
-            <argument>plain_value</argument>
-            <argument>%parameter_name%</argument>
-        </service>
+        <service id="mojo.sonata.simpledata.fields.factory" class="%mojo.sonata.simpledata.fields.factory.class%" public="false" />
+        
+        <service id="mojo.sonata.ui.manager.simpledata" class="%mojo.sonata.ui.manager.simpledata.class%">
+            <argument>%mojo.sonata.ui.manager.simpledata.entity%</argument>
+            <argument type="service" id="doctrine" />
+        </service>        
+        
     </services>
-    -->
+    
 </container>
