@@ -26,7 +26,7 @@ use Symfony\Component\Templating\EngineInterface;
  */
 class PostBlock extends BaseBlockService {
 
-    const DEFAULT_TEMPLATE = 'MojoSonataUIBundle:Block:post_2columns.html.twig';
+    const DEFAULT_TEMPLATE = 'MojoSonataUIBundle:Post:two_columns.html.twig';
 
     /**
      *
@@ -100,7 +100,6 @@ class PostBlock extends BaseBlockService {
 
         $form->add('settings', 'sonata_type_immutable_array', array(
             'keys' => array(
-//                array('template', 'text', array('required' => true, 'data' => $template)),
                 array('template', 'sonata_page_type_choice', array('choices' => $templates)),
                 array('post', 'sonata_page_type_choice', array('choices' => $posts))
             )
@@ -110,11 +109,11 @@ class PostBlock extends BaseBlockService {
     private function getTemplates() {
         $templates = array();
         $finder = new Finder();
-        $finder->name('post_*.html.twig')->files()->in(__DIR__.'/../Resources/views');
+        $finder->files()->in(__DIR__.'/../Resources/views/Post');
 
         foreach ($finder as $file) {
             $name = $file->getFilename();
-            $key = sprintf("MojoSonataUIBundle:Block:%s", $name);
+            $key = sprintf("MojoSonataUIBundle:Post:%s", $name);
             
             $templates[$key] = $name;
         }
