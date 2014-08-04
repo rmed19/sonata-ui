@@ -1,14 +1,7 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace Mojo\Sonata\UIBundle\Block;
 
-use Mojo\Sonata\UIBundle\Entity\SimpleDataManagerInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Validator\ErrorElement;
 use Sonata\BlockBundle\Block\BaseBlockService;
@@ -19,30 +12,25 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Templating\EngineInterface;
 
 /**
- * Description of CarouselBlock
+ * Description of HeaderBlockService
  *
- * @author jmpantoja
+ * @author pato
  */
-class SimpleDataBlock extends BaseBlockService {
+class HeaderBlock extends BaseBlockService {
 
-    const DEFAULT_TEMPLATE = 'MojoSonataUIBundle:SimpleData:admin.html.twig';
+    private $template;
 
-    /**
-     *
-     * @var SimpleDataManagerInterface
-     */
-    private $manager;
-
+    
     /**
      * Constructor
-     *
-     * @param string               $name        A block name
-     * @param EngineInterface      $templating  Twig engine service
-     * @param SimpleDataManagerInterface    $manager 
+     * 
+     * @param type $name
+     * @param \Symfony\Component\Templating\EngineInterface $templating
+     * @param string $template
      */
-    public function __construct($name, EngineInterface $templating, SimpleDataManagerInterface $manager) {
+    public function __construct($name, EngineInterface $templating, $template) {
         parent::__construct($name, $templating);
-        $this->setManager($manager);
+        $this->setTemplate($template);
     }
 
     /**
@@ -51,13 +39,10 @@ class SimpleDataBlock extends BaseBlockService {
     public function execute(BlockContextInterface $blockContext, Response $response = null) {
 
         $settings = $blockContext->getSettings();
-        $list = $this->getManager()->findAll();
-
 
         return $this->renderPrivateResponse($blockContext->getTemplate(), array(
                     'block' => $blockContext->getBlock(),
-                    'settings' => $settings,
-                    'list' => $list
+                    'settings' => $settings
         ));
     }
 
@@ -65,11 +50,9 @@ class SimpleDataBlock extends BaseBlockService {
      * {@inheritdoc}
      */
     public function setDefaultSettings(OptionsResolverInterface $resolver) {
-        //'template' => 'MojoSonataUIBundle:Block:carousel.html.twig',
         $resolver->setDefaults(array(
-            'template' => self::DEFAULT_TEMPLATE,
-            'post' => null,
-            'title'=>null
+            'template' => $this->getTemplate(),
+            'menu_name' => null
         ));
     }
 
@@ -77,14 +60,18 @@ class SimpleDataBlock extends BaseBlockService {
      * {@inheritdoc}
      */
     public function getName() {
-        return 'SimpleData';
+        return 'Header';
     }
 
     /**
      * {@inheritdoc}
      */
     public function buildEditForm(FormMapper $form, BlockInterface $block) {
-        
+        $form->add('settings', 'sonata_type_immutable_array', array(
+            'keys' => array(
+                array('menu_name', 'text', array('required' => false, 'data' => 'asdad')),
+            )
+        ));
     }
 
     /**
@@ -94,12 +81,13 @@ class SimpleDataBlock extends BaseBlockService {
         
     }
 
-    public function getManager() {
-        return $this->manager;
+    public function getTemplate() {
+        return $this->template;
     }
 
-    public function setManager(SimpleDataManagerInterface $manager) {
-        $this->manager = $manager;
+    public function setTemplate($template) {
+        $this->template = $template;
+        return $this;
     }
 
 }
